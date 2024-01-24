@@ -634,6 +634,7 @@ export class OrderService {
             orders: {
               include: { orderReview: { select: { deliverySatisfied: true } } },
             },
+            driverType: true,
           },
         },
         orderReview: {
