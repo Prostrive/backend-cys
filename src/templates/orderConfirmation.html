@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        color: #000;
+        background-color: #000;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        color: #000;
+        border-bottom: 1px solid black;
+      }
+
+      th,
+      td {
+        border-top: none;
+        border-bottom: none;
+        padding: 8px;
+        text-align: left;
+        font-size: 12px;
+      }
+      td {
+        font-size: 12px;
+      }
+
+      th:last-child,
+      td:last-child {
+        border-right: none;
+      }
+
+      thead {
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #3b845e;
+      }
+
+      .container {
+        margin: 0 auto;
+        padding: 20px;
+        color: #000;
+        background-color: #fff;
+        max-width: 500px;
+        border: #3b845e 2px solid;
+      }
+
+      .bannerContainer {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        padding: 10px;
+      }
+
+      .banner {
+        display: block;
+        margin: 0 auto;
+        width: 60%;
+      }
+
+      .headerContainer {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .product-name {
+        white-space: pre-wrap;
+      }
+
+      .header {
+        font-size: 20px;
+        color: #000;
+      }
+
+      .field {
+        margin-bottom: 30px;
+      }
+
+      .text-green {
+        color: #3b845e;
+      }
+
+      .text-black {
+        color: #000;
+      }
+
+      .text-white {
+        color: #fff;
+      }
+
+      .bg-black {
+        background-color: #000;
+      }
+
+      .bg-white {
+        background-color: #fff;
+      }
+
+      .bg-green {
+        background-color: #3b845e;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .text-end {
+        text-align: end;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="bannerContainer">
+        <img
+          class="banner"
+          src="https://storage.googleapis.com/collect-your-shopping-landingpage/cys1.png"
+          alt="CYS banner"
+        />
+      </div>
+
+      <div class="headerContainer">
+        <h1 class="text-green">Order Confirmation</h1>
+        <p class="header text-black">
+          Thank you for your order, {{customerDetails.name}}!
+        </p>
+      </div>
+
+      <div class="field">
+        <p class="text-black">Order Number: {{orderNumber}}</p>
+        <p class="text-black">Subtotal: € {{subtotal}}</p>
+        <p class="text-black">Delivery Fee: € {{deliveryFee}}</p>
+        <p class="text-black">Total: € {{total}}</p>
+      </div>
+
+      <div class="field">
+        <h2 class="text-green">Delivery Address:</h2>
+        <p class="text-black">{{customerDetails.address}}</p>
+      </div>
+
+      {{#each orders}}
+      <div class="field">
+        <h3 class="text-green">{{storeName}}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Products</th>
+              <th class="text-center">Price</th>
+              <th class="text-center">Qty</th>
+              <th class="text-center">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each orderLines}}
+            <tr>
+              <td class="text-black">{{productName}}</td>
+              <td class="text-center text-black">{{price}}</td>
+              <td class="text-center text-black">{{quantity}}</td>
+              <td class="text-center text-black">{{total}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <p class="text-end text-black">Store Total: {{storeTotal}}</p>
+      </div>
+      {{/each}}
+      <div>
+        <p class="text-black">
+          You can track the status of your order in your CYS app.
+        </p>
+
+        <p class="text-black">
+          If you have any questions or need further assistance, please feel free
+          to contact our customer support team.
+        </p>
+
+        <p class="text-black">Thank you for choosing us!</p>
+        <p class="text-black">Kind regards, CYS team</p>
+      </div>
+    </div>
+  </body>
+</html>

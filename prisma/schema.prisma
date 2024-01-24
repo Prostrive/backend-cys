@@ -1,0 +1,470 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["filteredRelationCount", "extendedWhereUnique"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id                 String                @id @default(uuid())
+  userId             String                @unique
+  email              String                @unique
+  name               String
+  phoneNumber        String?
+  walletBalance      Decimal               @default(0.0) @db.Decimal(12, 2)
+  notificationTokens String[]              @default([])
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  addresses          CustomerAddress[]
+  searches           CustomerSearch[]
+  Order              Order[]
+  walletTransaction  WalletTransaction[]
+  driver             Driver?
+  likedStores        CustomerLikedStores[]
+}
+
+model CustomerAddress {
+  id               String    @id @default(uuid())
+  customerId       String
+  latitude         Float
+  longitude        Float
+  address          Json
+  formattedAddress String?
+  primary          Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  customer         Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  Order            Order[]
+}
+
+model CustomerSearch {
+  id         String    @id @default(uuid())
+  customerId String?
+  searchTerm String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model CustomerLikedStores {
+  id         String   @id @default(uuid())
+  customerId String
+  storeId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AppSettings {
+  id          Int      @id @default(autoincrement())
+  deliveryFee Float
+  isActive    Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([id])
+}
+
+model StoreManager {
+  id        String   @id @default(uuid())
+  storeId   String
+  email     String   @unique
+  name      String
+  userId    String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model StoreEmployee {
+  id        String   @id @default(uuid())
+  storeId   String
+  email     String   @unique
+  name      String
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model Product {
+  id                  String               @id @default(uuid())
+  price               Float
+  discountedPrice     Float?
+  storeId             String
+  available           Boolean              @default(true)
+  categoryId          String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  category            ProductCategory      @relation(fields: [categoryId], references: [id])
+  store               Store                @relation(fields: [storeId], references: [id])
+  images              ProductImage[]
+  productTranslations ProductTranslation[]
+  orderLines          StoreOrderLine[]
+}
+
+model ProductCategory {
+  id                  String                       @id @default(uuid())
+  imageUrl            String
+  thumbnailUrl        String
+  hasParent           Boolean                      @default(false)
+  parentId            String?
+  createdAt           DateTime                     @default(now())
+  updatedAt           DateTime                     @updatedAt
+  products            Product[]
+  storeAdvertisements StoreAdvertisements[]
+  translations        ProductCategoryTranslation[]
+}
+
+model ProductCategoryTranslation {
+  id          String          @id @default(uuid())
+  categoryId  String
+  name        String
+  description String
+  language    Language        @default(en)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  category    ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductTranslation {
+  id          String   @id @default(uuid())
+  productId   String
+  name        String
+  description String
+  unit        String
+  language    Language @default(en)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Store {
+  id                  String                @id @default(uuid())
+  name                String
+  categoryId          String
+  thumbnailImageUrl   String?
+  logoImageUrl        String
+  phoneNumber         String?               @unique
+  active              Boolean               @default(true)
+  deliveryNote        String?
+  latitude            Float
+  longitude           Float
+  address             Json
+  stripeId            String?
+  stripeActivated     Boolean               @default(false)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  products            Product[]
+  category            StoreCategory         @relation(fields: [categoryId], references: [id])
+  managers            StoreManager[]
+  openingTimes        StoreOpeningTime[]
+  storeOrders         StoreOrder[]
+  storeOrderPayments  StoreOrderPayment[]
+  storeEmployees      StoreEmployee[]
+  likedStore          CustomerLikedStores[]
+  storeStory          StoreStory?
+  storeAdvertisements StoreAdvertisements[]
+}
+
+model StoreCategory {
+  id           String                     @id @default(uuid())
+  imageUrl     String
+  thumbnailUrl String
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+  store        Store[]
+  translations StoreCategoryTranslation[]
+}
+
+model StoreCategoryTranslation {
+  id          String        @id @default(uuid())
+  categoryId  String
+  name        String
+  description String
+  language    Language      @default(en)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  category    StoreCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model StoreOpeningTime {
+  id        String   @id @default(uuid())
+  storeId   String?
+  dayOfWeek Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  openTime  DateTime @db.Timestamp()
+  closeTime DateTime @db.Timestamp()
+  store     Store?   @relation(fields: [storeId], references: [id])
+}
+
+model StoreStory {
+  id        String   @id @default(uuid())
+  storeId   String   @unique
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model StoreAdvertisements {
+  id              String          @id @default(uuid())
+  storeId         String
+  categoryId      String
+  bgImageUrl      String
+  title           String?
+  description     String?
+  buttonText      String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  productCategory ProductCategory @relation(fields: [categoryId], references: [id])
+  store           Store           @relation(fields: [storeId], references: [id])
+}
+
+model Order {
+  id                  String             @id @default(uuid())
+  orderNumber         String             @unique
+  customerId          String
+  customerAddressId   String
+  deliveryNote        String?
+  deliveryDate        DateTime?
+  asap                Boolean
+  deliveryFee         Float
+  driverId            String?
+  notificationSent    Boolean            @default(false)
+  notificationCYSSent Boolean            @default(false)
+  notificationTime    DateTime?
+  status              Status             @default(pending)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  orderDrivers        OrderDriver[]
+  customerPayment     CustomerPayment?
+  customerRefund      CustomerRefund[]
+  customerAddress     CustomerAddress    @relation(fields: [customerAddressId], references: [id])
+  customer            Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  driver              Driver?            @relation(fields: [driverId], references: [id])
+  walletTransaction   WalletTransaction?
+  storeOrder          StoreOrder[]
+  orderTrip           OrderTrip?
+  orderReview         OrderReview?
+}
+
+model OrderTrip {
+  id                 String    @id @default(uuid())
+  orderId            String    @unique
+  acceptedTimestamp  DateTime
+  pickupTimestamp    DateTime?
+  deliveredTimestamp DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderReview {
+  id                         String   @id @default(uuid())
+  orderId                    String   @unique
+  deliverySatisfied          Boolean?
+  deliveryAdditionalComments String?
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  order                      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model CustomerPayment {
+  id                  String   @id @default(uuid())
+  orderId             String   @unique
+  subtotal            Float
+  deliveryFee         Float
+  stripeTransferGroup String
+  stripePaymentIntent String
+  total               Float
+  status              Status   @default(pending)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model CustomerRefund {
+  id        String   @id @default(uuid())
+  orderId   String
+  total     Float
+  status    Status   @default(pending)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model StoreOrder {
+  id           String              @id @default(uuid())
+  orderId      String
+  storeId      String
+  pickUpCode   String?
+  storeNote    String?
+  status       Status              @default(pending)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  order        Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  store        Store               @relation(fields: [storeId], references: [id])
+  orderLines   StoreOrderLine[]
+  storePayment StoreOrderPayment[]
+}
+
+model StoreOrderPayment {
+  id           String     @id @default(uuid())
+  storeOrderId String
+  storeId      String
+  subtotal     Float
+  platformFee  Float
+  total        Float
+  stripeStatus Status     @default(pending)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  store        Store      @relation(fields: [storeId], references: [id])
+  storeOrder   StoreOrder @relation(fields: [storeOrderId], references: [id], onDelete: Cascade)
+}
+
+model StoreOrderLine {
+  id           String        @id @default(uuid())
+  storeOrderId String
+  productId    String
+  quantity     Int
+  status       ProductStatus @default(noResponse)
+  totalPrice   Float
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  product      Product       @relation(fields: [productId], references: [id])
+  storeOrder   StoreOrder    @relation(fields: [storeOrderId], references: [id], onDelete: Cascade)
+}
+
+model PushNotifications {
+  id                String                   @id @default(uuid())
+  body              String
+  audience          PushNotificationAudience
+  scheduledSendTime DateTime
+  notificationSent  Boolean                  @default(false)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+}
+
+model Driver {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  email        String        @unique
+  name         String
+  imageUrl     String
+  city         Cities
+  dateOfBirth  DateTime
+  driverType   DriverType    @default(regular)
+  customerId   String        @unique
+  phoneNumber  String?       @unique
+  vehicleType  VehicleType
+  available    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  orders       Order[]
+  orderDrivers OrderDriver[]
+}
+
+model WalletTransaction {
+  id                    String                @id @default(uuid())
+  customerId            String
+  orderId               String?               @unique
+  walletTransactionType WalletTransactionType
+  amount                Float
+  description           String
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  order                 Order?                @relation(fields: [orderId], references: [id])
+  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model OrderDriver {
+  id        String            @id @default(uuid())
+  orderId   String
+  driverId  String
+  status    OrderDriverStatus @default(noResponse)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  order     Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  driver    Driver            @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@unique([driverId, orderId])
+}
+
+enum PushNotificationAudience {
+  ALL
+  CUSTOMERS
+  MANAGERS
+  DRIVERS
+}
+
+enum Language {
+  en
+  nl
+}
+
+enum Cities {
+  Eindhoven
+  Amsterdam
+}
+
+enum Status {
+  pending
+  processing
+  picking
+  picked
+  delivery
+  completed
+  canceled
+}
+
+enum ProductStatus {
+  noResponse
+  accepted
+  rejected
+}
+
+enum OrderDriverStatus {
+  accepted
+  rejected
+  noResponse
+}
+
+enum DriverType {
+  regular
+  cys
+}
+
+enum VehicleType {
+  car
+  bicycle
+}
+
+enum WalletTransactionType {
+  increase
+  decrease
+}
