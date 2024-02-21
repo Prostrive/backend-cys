@@ -116,6 +116,62 @@ export class StoreService {
     };
   }
 
+  async findOneByAdmin(id: string, language: string) {
+    const now = new Date();
+    const dayOfWeek = now.getUTCDay();
+
+    const store = await this.prisma.store.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        products: {
+          include: {
+            productTranslations: {
+              where: {
+                language: language as Language,
+              },
+              select: {
+                name: true,
+                unit: true,
+              },
+            },
+            images: true,
+            category: {
+              include: {
+                translations: {
+                  where: {
+                    language: language as Language,
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+        openingTimes: true,
+        managers: true,
+        storeAdvertisements: true,
+        storeStory: true,
+      },
+    });
+
+    const isOpen = store?.openingTimes.some((openingTime) => {
+      if (openingTime.dayOfWeek === dayOfWeek) {
+        return isTimeWithinRange(
+          now,
+          openingTime.openTime,
+          openingTime.closeTime,
+        );
+      }
+    });
+
+    return {
+      ...store,
+      isOpen,
+    };
+  }
+
   /** This is called when we want to search for stores based on the location of the user and also by the name or category
    *
    * @param searchTerm
@@ -420,12 +476,19 @@ export class StoreService {
     });
   }
 
-  async findStoresByCategory(categoryId: string) {
+  async findStoresByCategory(categoryId: string, selectedLocation: string) {
+    if (!selectedLocation) return [];
     const now = new Date();
     const dayOfWeek = now.getUTCDay();
 
     const stores = await this.prisma.store.findMany({
-      where: { categoryId },
+      where: {
+        categoryId,
+        address: {
+          path: ['city'],
+          equals: selectedLocation,
+        },
+      },
       include: { category: true, openingTimes: { where: { dayOfWeek } } },
     });
 

@@ -49,6 +49,12 @@ export class StoreController {
     return this.storeService.findOne(id, language || Language.en);
   }
 
+  @Get('/admin/:id')
+  @UseGuards(StoreGuard)
+  findOneByAdmin(@Param('id') id: string, @Query('language') language: string) {
+    return this.storeService.findOneByAdmin(id, language || Language.en);
+  }
+
   @Get('/all/search/:searchTerm')
   findStoresBySearch(
     @Param('searchTerm') searchTerm: string,
@@ -83,8 +89,11 @@ export class StoreController {
   }
 
   @Get('category/:categoryId')
-  findStoresByCategory(@Param('categoryId') categoryId: string) {
-    return this.storeService.findStoresByCategory(categoryId);
+  findStoresByCategory(
+    @Param('categoryId') categoryId: string,
+    @Query('selectedLocation') selectedLocation?: string,
+  ) {
+    return this.storeService.findStoresByCategory(categoryId, selectedLocation);
   }
 
   @Patch(':id')

@@ -86,7 +86,7 @@ model StoreManager {
   userId    String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  store     Store    @relation(fields: [storeId], references: [id])
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model StoreEmployee {
@@ -97,7 +97,7 @@ model StoreEmployee {
   userId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  store     Store    @relation(fields: [storeId], references: [id])
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -110,7 +110,7 @@ model Product {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   category            ProductCategory      @relation(fields: [categoryId], references: [id])
-  store               Store                @relation(fields: [storeId], references: [id])
+  store               Store                @relation(fields: [storeId], references: [id], onDelete: Cascade)
   images              ProductImage[]
   productTranslations ProductTranslation[]
   orderLines          StoreOrderLine[]
@@ -218,7 +218,7 @@ model StoreOpeningTime {
   updatedAt DateTime @updatedAt
   openTime  DateTime @db.Timestamp()
   closeTime DateTime @db.Timestamp()
-  store     Store?   @relation(fields: [storeId], references: [id])
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model StoreStory {
@@ -227,7 +227,7 @@ model StoreStory {
   imageUrl  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  store     Store    @relation(fields: [storeId], references: [id])
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model StoreAdvertisements {
@@ -241,7 +241,7 @@ model StoreAdvertisements {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   productCategory ProductCategory @relation(fields: [categoryId], references: [id])
-  store           Store           @relation(fields: [storeId], references: [id])
+  store           Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -327,7 +327,7 @@ model StoreOrder {
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
   order        Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  store        Store               @relation(fields: [storeId], references: [id])
+  store        Store               @relation(fields: [storeId], references: [id], onDelete: Cascade)
   orderLines   StoreOrderLine[]
   storePayment StoreOrderPayment[]
 }
@@ -342,7 +342,7 @@ model StoreOrderPayment {
   stripeStatus Status     @default(pending)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  store        Store      @relation(fields: [storeId], references: [id])
+  store        Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
   storeOrder   StoreOrder @relation(fields: [storeOrderId], references: [id], onDelete: Cascade)
 }
 
