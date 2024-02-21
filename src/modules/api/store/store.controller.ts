@@ -50,7 +50,7 @@ export class StoreController {
   }
 
   @Get('/admin/:id')
-  @UseGuards(StoreGuard)
+  @UseGuards(AdminGuard)
   findOneByAdmin(@Param('id') id: string, @Query('language') language: string) {
     return this.storeService.findOneByAdmin(id, language || Language.en);
   }
