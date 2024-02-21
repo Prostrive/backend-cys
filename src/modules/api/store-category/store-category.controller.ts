@@ -15,6 +15,7 @@ import { UpdateStoreCategoryDto } from './dto/update-store-category.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FirebaseAuthGuard } from '@whitecloak/nestjs-passport-firebase';
 import { AdminGuard } from '../admin/admin.guard';
+import { Language } from '@prisma/client';
 
 @Controller('store-categories')
 @ApiTags('store-categories')
@@ -29,7 +30,7 @@ export class StoreCategoryController {
 
   @Get()
   findAll(@Query('language') language: string) {
-    return this.storeCategoryService.findAll(language);
+    return this.storeCategoryService.findAll(Language.en);
   }
 
   findOne(@Param('id') id: string) {

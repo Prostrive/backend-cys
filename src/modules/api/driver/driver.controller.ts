@@ -107,7 +107,7 @@ export class DriverController {
   ) {
     return this.orderService.findAcceptedOrderDetailsForDriver(
       driverId,
-      language,
+      Language.en,
     );
   }
 

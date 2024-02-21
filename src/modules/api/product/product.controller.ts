@@ -33,12 +33,12 @@ export class ProductController {
 
   @Get()
   findAll(@Query('language') language: string) {
-    return this.productService.findAll(language);
+    return this.productService.findAll(Language.en);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Query('language') language: string) {
-    return this.productService.findOne(id, language);
+    return this.productService.findOne(id, Language.en);
   }
 
   @Get('/store/:storeId')
@@ -46,10 +46,7 @@ export class ProductController {
     @Param('storeId') storeId: string,
     @Query('language') language: string,
   ) {
-    return this.productService.findProductsByStore(
-      storeId,
-      language || Language.en,
-    );
+    return this.productService.findProductsByStore(storeId, Language.en);
   }
 
   @Get('store/:storeId/:searchTerm')
@@ -61,7 +58,7 @@ export class ProductController {
     return this.productService.findByProductNameAndStoreId(
       storeId,
       searchTerm,
-      language,
+      Language.en,
     );
   }
 

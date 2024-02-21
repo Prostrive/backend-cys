@@ -15,7 +15,7 @@ import {
 import { StoreOrderService } from './store-order.service';
 import { CreateStoreOrderDto } from './dto/create-store-order.dto';
 import { UpdateStoreOrderDto } from './dto/update-store-order.dto';
-import { Status } from '@prisma/client';
+import { Language, Status } from '@prisma/client';
 import { StoreGuard } from '../store/store.guard';
 import { DriverGuard } from '../driver/driver.guard';
 
@@ -43,7 +43,7 @@ export class StoreOrderController {
   @Get(':id')
   @UseGuards(StoreGuard)
   findOne(@Param('id') id: string, @Query('language') language: string) {
-    return this.storeOrderService.findOne(id, language);
+    return this.storeOrderService.findOne(id, Language.en);
   }
 
   @Get('accept/:id')

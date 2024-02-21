@@ -15,7 +15,7 @@ export class OrderController {
     @Body() createOrderDto: CreateOrderDto,
     @Query('language') language?: Language,
   ) {
-    return this.orderService.create(createOrderDto, language || Language.en);
+    return this.orderService.create(createOrderDto, Language.en);
   }
 
   @Post('cys-credit')
@@ -25,7 +25,7 @@ export class OrderController {
   ) {
     return this.orderService.createWithoutStripePayment(
       createOrderWithoutStripeDto,
-      language || Language.en,
+      Language.en,
     );
   }
 
@@ -41,10 +41,7 @@ export class OrderController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @Query('language') language?: Language) {
-    return this.orderService.findOneOrderWithCompleteDetails(
-      id,
-      language || Language.en,
-    );
+    return this.orderService.findOneOrderWithCompleteDetails(id, Language.en);
   }
 
   @Put('status/picking/:id')

@@ -36,23 +36,23 @@ export class StoreController {
   @UseGuards(StoreGuard)
   getStoreInfo(@Req() request: Request, @Query('language') language: string) {
     const storeId = request['storeId'];
-    return this.storeService.findOne(storeId, language || Language.en);
+    return this.storeService.findOne(storeId, Language.en);
   }
 
   @Get()
   findAll(@Query('language') language: string) {
-    return this.storeService.findAll(language || Language.en);
+    return this.storeService.findAll(Language.en);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Query('language') language: string) {
-    return this.storeService.findOne(id, language || Language.en);
+    return this.storeService.findOne(id, Language.en);
   }
 
   @Get('/admin/:id')
   @UseGuards(AdminGuard)
   findOneByAdmin(@Param('id') id: string, @Query('language') language: string) {
-    return this.storeService.findOneByAdmin(id, language || Language.en);
+    return this.storeService.findOneByAdmin(id, Language.en);
   }
 
   @Get('/all/search/:searchTerm')
@@ -65,7 +65,7 @@ export class StoreController {
     return this.storeService.searchStoresByLocation(
       searchTerm,
       selectedLocation,
-      language || Language.en,
+      Language.en,
       customerId,
     );
   }

@@ -30,10 +30,7 @@ export class OrderLineController {
     @Body() createStoreOrderLineDto: CreateStoreOrderLineDto,
     @Query('language') language?: Language,
   ) {
-    return this.orderLineService.create(
-      createStoreOrderLineDto,
-      language || Language.en,
-    );
+    return this.orderLineService.create(createStoreOrderLineDto, Language.en);
   }
 
   @Get()

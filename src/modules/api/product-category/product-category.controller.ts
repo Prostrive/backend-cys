@@ -12,6 +12,7 @@ import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { Query, UseGuards } from '@nestjs/common/decorators';
 import { AdminGuard } from '../admin/admin.guard';
+import { Language } from '@prisma/client';
 
 @Controller('product-category')
 export class ProductCategoryController {
@@ -27,7 +28,7 @@ export class ProductCategoryController {
 
   @Get()
   findAll(@Query('language') language: string) {
-    return this.productCategoryService.findAll(language);
+    return this.productCategoryService.findAll(Language.en);
   }
 
   @Get('store/:storeId')
@@ -35,12 +36,12 @@ export class ProductCategoryController {
     @Param('storeId') storeId: string,
     @Query('language') language: string,
   ) {
-    return this.productCategoryService.findAllByStoreId(storeId, language);
+    return this.productCategoryService.findAllByStoreId(storeId, Language.en);
   }
 
   @Get('parent')
   findParentCategories(@Query('language') language: string) {
-    return this.productCategoryService.findParentCategories(language);
+    return this.productCategoryService.findParentCategories(Language.en);
   }
 
   @Get(':id')
@@ -49,7 +50,7 @@ export class ProductCategoryController {
     @Query('storeId') storeId: string,
     @Query('language') language: string,
   ) {
-    return this.productCategoryService.findOne(id, storeId, language);
+    return this.productCategoryService.findOne(id, storeId, Language.en);
   }
 
   @Patch(':id')
